@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { OverviewClient } from "@/components/OverviewClient";
+import { CurrencyRatesSection } from "@/components/CurrencyRates";
 import type { ClientRow, TransactionRow } from "@/lib/types";
 
 export default async function OverviewPage() {
@@ -18,9 +19,12 @@ export default async function OverviewPage() {
     .eq("user_id", user!.id);
 
   return (
-    <OverviewClient
-      transactions={(transactions as TransactionRow[]) || []}
-      clients={(clients as ClientRow[]) || []}
-    />
+    <>
+      <CurrencyRatesSection />
+      <OverviewClient
+        transactions={(transactions as TransactionRow[]) || []}
+        clients={(clients as ClientRow[]) || []}
+      />
+    </>
   );
 }
