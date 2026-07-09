@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Section, Segmented, BalancePill } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
 import type { ClientRow, TransactionRow } from "@/lib/types";
@@ -15,6 +15,10 @@ function periodStart(period: Period) {
   if (period === "year") d.setDate(d.getDate() - 364);
   d.setHours(0, 0, 0, 0);
   return d;
+}
+
+function periodLengthDays(period: Period) {
+  return { week: 7, month: 30, year: 365 }[period];
 }
 
 function monthLabel(offset: number) {
@@ -43,11 +47,28 @@ export function OverviewClient({
     return transactions.filter((t) => new Date(t.date + "T00:00:00") >= start);
   }, [transactions, period]);
 
+  const prevPeriodTx = useMemo(() => {
+    const start = periodStart(period);
+    const days = periodLengthDays(period);
+    const prevStart = new Date(start);
+    prevStart.setDate(prevStart.getDate() - days);
+    return transactions.filter((t) => {
+      const d = new Date(t.date + "T00:00:00");
+      return d >= prevStart && d < start;
+    });
+  }, [transactions, period]);
+
   const totals = useMemo(() => {
     let income = 0, expense = 0;
     periodTx.forEach((t) => (t.type === "income" ? (income += t.amount) : (expense += t.amount)));
     return { income, expense, net: income - expense };
   }, [periodTx]);
+
+  const prevTotals = useMemo(() => {
+    let income = 0, expense = 0;
+    prevPeriodTx.forEach((t) => (t.type === "income" ? (income += t.amount) : (expense += t.amount)));
+    return { income, expense };
+  }, [prevPeriodTx]);
 
   const expenseByCategory = useMemo(() => {
     const m: Record<string, number> = {};
@@ -91,6 +112,13 @@ export function OverviewClient({
 
   const maxTrend = Math.max(1, ...monthlyTrend.flatMap((m) => [m.income, m.expense]));
   const periodLabel = { week: "неделя", month: "месяц", year: "год" }[period];
+  const prevPeriodLabel = { week: "прошлой неделе", month: "прошлому месяцу", year: "прошлому году" }[period];
+
+  const topCategory = expenseByCategory[0];
+  const topCategoryShare = topCategory && totals.expense > 0 ? (topCategory[1] / totals.expense) * 100 : 0;
+
+  const expenseChangePct =
+    prevTotals.expense > 0 ? ((totals.expense - prevTotals.expense) / prevTotals.expense) * 100 : null;
 
   return (
     <>
@@ -144,6 +172,53 @@ export function OverviewClient({
             </div>
           ))}
         </div>
+      </Section>
+
+      <Section eyebrow={periodLabel} title="Анализ трат">
+        {totals.expense === 0 ? (
+          <p className="text-[13px] text-inkSoft">Пока нет расходов за этот период — анализировать нечего.</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {topCategory && (
+              <div className="rounded-xl p-3 bg-bg">
+                <div className="text-[11px] mb-1 text-inkFaint">Больше всего потрачено на</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] font-semibold text-ink">{topCategory[0]}</span>
+                  <span className="text-[14px] font-mono font-semibold text-ink">
+                    {formatMoney(topCategory[1])}
+                  </span>
+                </div>
+                <div className="text-[12px] mt-0.5 text-inkSoft">
+                  {topCategoryShare.toFixed(0)}% от всех расходов за {periodLabel}
+                </div>
+              </div>
+            )}
+
+            {expenseChangePct !== null && (
+              <div className="rounded-xl p-3 bg-bg">
+                <div className="text-[11px] mb-1 text-inkFaint">Расходы по сравнению с {prevPeriodLabel}</div>
+                <div className="flex items-center gap-1.5">
+                  {expenseChangePct > 0 ? (
+                    <ArrowUpRight size={16} className="text-accentRed" />
+                  ) : (
+                    <ArrowDownRight size={16} className="text-accentGreen" />
+                  )}
+                  <span
+                    className={`text-[16px] font-bold font-mono ${
+                      expenseChangePct > 0 ? "text-accentRed" : "text-accentGreen"
+                    }`}
+                  >
+                    {expenseChangePct > 0 ? "+" : ""}
+                    {expenseChangePct.toFixed(0)}%
+                  </span>
+                  <span className="text-[12px] text-inkSoft">
+                    {expenseChangePct > 0 ? "потратили больше" : "потратили меньше"}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </Section>
 
       <Section eyebrow={periodLabel} title="Расходы по категориям">
