@@ -8,6 +8,16 @@ export type ClientRow = {
   created_at: string;
 };
 
+export type StudentRow = {
+  id: string;
+  name: string;
+  phone: string | null;
+  test_date: string | null;
+  result: string | null;
+  paid: number;
+  created_at: string;
+};
+
 export type TransactionRow = {
   id: string;
   type: "income" | "expense";
