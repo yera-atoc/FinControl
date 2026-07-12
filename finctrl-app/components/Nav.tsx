@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TrendingUp, Wallet, Users, GraduationCap, CheckSquare } from "lucide-react";
+import { TrendingUp, Wallet, Users, GraduationCap, CheckSquare, Landmark } from "lucide-react";
 
 const TABS = [
   { href: "/dashboard", label: "Обзор", icon: TrendingUp },
   { href: "/dashboard/operations", label: "Операции", icon: Wallet },
+  { href: "/dashboard/accounts", label: "Счета", icon: Landmark },
   { href: "/dashboard/clients", label: "Клиенты", icon: Users },
   { href: "/dashboard/students", label: "Ученики", icon: GraduationCap },
   { href: "/dashboard/tasks", label: "Задачи", icon: CheckSquare },
@@ -22,7 +23,7 @@ export function Nav() {
           <Link
             key={t.href}
             href={t.href}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[13px] font-semibold transition-all whitespace-nowrap ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[13px] font-semibold transition-all duration-150 whitespace-nowrap ${
               active ? "bg-card text-ink shadow-sm" : "text-inkSoft"
             }`}
           >
