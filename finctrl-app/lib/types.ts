@@ -18,6 +18,20 @@ export type StudentRow = {
   created_at: string;
 };
 
+export type AccountRow = {
+  id: string;
+  name: string;
+  bank: string | null;
+  balance: number;
+  created_at: string;
+};
+
+export type CategoryRow = {
+  id: string;
+  name: string;
+  created_at: string;
+};
+
 export type TransactionRow = {
   id: string;
   type: "income" | "expense";
