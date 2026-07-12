@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { OverviewClient } from "@/components/OverviewClient";
 import { CurrencyRatesSection } from "@/components/CurrencyRates";
+import { QuoteWidget } from "@/components/QuoteWidget";
 import type { ClientRow, TransactionRow } from "@/lib/types";
 
 export default async function OverviewPage() {
@@ -20,6 +21,7 @@ export default async function OverviewPage() {
 
   return (
     <>
+      <QuoteWidget />
       <CurrencyRatesSection />
       <OverviewClient
         transactions={(transactions as TransactionRow[]) || []}
