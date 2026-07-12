@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { OperationsForm } from "./OperationsForm";
-import { OperationsList } from "./OperationsList";
+import { OperationsSection } from "./OperationsSection";
 import type { CategoryRow, ClientRow, TransactionRow } from "@/lib/types";
 
 export default async function OperationsPage() {
@@ -22,12 +21,10 @@ export default async function OperationsPage() {
     .order("created_at", { ascending: true });
 
   return (
-    <>
-      <OperationsForm
-        clients={(clients as ClientRow[]) || []}
-        customCategories={(categories as CategoryRow[]) || []}
-      />
-      <OperationsList transactions={(transactions as TransactionRow[]) || []} clients={(clients as ClientRow[]) || []} />
-    </>
+    <OperationsSection
+      clients={(clients as ClientRow[]) || []}
+      initialTransactions={(transactions as TransactionRow[]) || []}
+      initialCategories={(categories as CategoryRow[]) || []}
+    />
   );
 }
