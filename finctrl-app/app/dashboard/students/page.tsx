@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { StudentsAddForm } from "./StudentsAddForm";
-import { StudentsTable } from "./StudentsTable";
+import { StudentsSection } from "./StudentsSection";
 import type { StudentRow } from "@/lib/types";
 
 export default async function StudentsPage() {
@@ -13,10 +12,5 @@ export default async function StudentsPage() {
     .eq("user_id", user!.id)
     .order("test_date", { ascending: false, nullsFirst: false });
 
-  return (
-    <>
-      <StudentsAddForm />
-      <StudentsTable students={(students as StudentRow[]) || []} />
-    </>
-  );
+  return <StudentsSection initialStudents={(students as StudentRow[]) || []} />;
 }
