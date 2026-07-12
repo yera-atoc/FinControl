@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { OperationsForm } from "./OperationsForm";
 import { OperationsList } from "./OperationsList";
-import type { ClientRow, TransactionRow } from "@/lib/types";
+import type { CategoryRow, ClientRow, TransactionRow } from "@/lib/types";
 
 export default async function OperationsPage() {
   const supabase = await createClient();
@@ -15,9 +15,18 @@ export default async function OperationsPage() {
 
   const { data: clients } = await supabase.from("clients").select("*").eq("user_id", user!.id);
 
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("*")
+    .eq("user_id", user!.id)
+    .order("created_at", { ascending: true });
+
   return (
     <>
-      <OperationsForm clients={(clients as ClientRow[]) || []} />
+      <OperationsForm
+        clients={(clients as ClientRow[]) || []}
+        customCategories={(categories as CategoryRow[]) || []}
+      />
       <OperationsList transactions={(transactions as TransactionRow[]) || []} clients={(clients as ClientRow[]) || []} />
     </>
   );
