@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { TasksForm } from "./TasksForm";
-import { TasksList } from "./TasksList";
+import { TasksSection } from "./TasksSection";
 import type { TaskRow } from "@/lib/types";
 
 export default async function TasksPage() {
@@ -13,10 +12,5 @@ export default async function TasksPage() {
     .eq("user_id", user!.id)
     .order("due", { ascending: true });
 
-  return (
-    <>
-      <TasksForm />
-      <TasksList tasks={(tasks as TaskRow[]) || []} />
-    </>
-  );
+  return <TasksSection initialTasks={(tasks as TaskRow[]) || []} />;
 }
