@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { AccountsAddForm } from "./AccountsAddForm";
-import { AccountsTable } from "./AccountsTable";
+import { AccountsSection } from "./AccountsSection";
 import type { AccountRow } from "@/lib/types";
 
 export default async function AccountsPage() {
@@ -13,10 +12,5 @@ export default async function AccountsPage() {
     .eq("user_id", user!.id)
     .order("created_at", { ascending: true });
 
-  return (
-    <>
-      <AccountsAddForm />
-      <AccountsTable accounts={(accounts as AccountRow[]) || []} />
-    </>
-  );
+  return <AccountsSection initialAccounts={(accounts as AccountRow[]) || []} />;
 }
